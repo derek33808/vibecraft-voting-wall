@@ -218,6 +218,19 @@ a:hover {
   background: rgba(239, 68, 68, 0.1);
 }
 
+.vote-button--voted {
+  background: var(--color-red);
+  border-color: var(--color-red);
+}
+
+.vote-button--voted .vote-icon {
+  filter: none;
+}
+
+.vote-button--voted:hover {
+  background: rgba(239, 68, 68, 0.8);
+}
+
 .vote-button:active {
   transform: scale(0.95);
 }

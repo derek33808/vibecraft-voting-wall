@@ -2,10 +2,11 @@ import { useState } from 'react'
 
 interface VoteButtonProps {
   count: number
+  voted: boolean
   onVote: () => void
 }
 
-export function VoteButton({ count, onVote }: VoteButtonProps) {
+export function VoteButton({ count, voted, onVote }: VoteButtonProps) {
   const [animating, setAnimating] = useState(false)
 
   const handleClick = () => {
@@ -16,11 +17,11 @@ export function VoteButton({ count, onVote }: VoteButtonProps) {
 
   return (
     <button
-      className={`vote-button ${animating ? 'vote-button--animate' : ''}`}
+      className={`vote-button ${voted ? 'vote-button--voted' : ''} ${animating ? 'vote-button--animate' : ''}`}
       onClick={handleClick}
-      title="点赞"
+      title={voted ? '取消点赞' : '点赞'}
     >
-      <span className="vote-icon">♥</span>
+      <span className="vote-icon">{voted ? '❤️' : '♥'}</span>
       <span className="vote-count">{count}</span>
     </button>
   )

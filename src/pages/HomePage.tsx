@@ -5,7 +5,9 @@ import { StudentCard } from '../components/StudentCard'
 import {
   fetchStudents,
   fetchVoteCounts,
+  fetchVotedStudentIds,
   addVote,
+  removeVote,
   fetchComments,
   addComment,
 } from '../lib/api'
@@ -13,6 +15,7 @@ import {
 export function HomePage() {
   const [students, setStudents] = useState<Student[]>([])
   const [votes, setVotes] = useState<VoteData>({})
+  const [votedStudents, setVotedStudents] = useState<Set<string>>(new Set())
   const [comments, setComments] = useState<Record<string, Comment[]>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -22,12 +25,14 @@ export function HomePage() {
     async function loadData() {
       try {
         setLoading(true)
-        const [studentsData, voteCounts] = await Promise.all([
+        const [studentsData, voteCounts, votedIds] = await Promise.all([
           fetchStudents(),
           fetchVoteCounts(),
+          fetchVotedStudentIds(),
         ])
         setStudents(studentsData.length > 0 ? studentsData : FALLBACK_STUDENTS)
         setVotes(voteCounts)
+        setVotedStudents(votedIds)
         setError(null)
       } catch (err) {
         console.error('Failed to load data from Supabase, using fallback:', err)
@@ -52,31 +57,26 @@ export function HomePage() {
   }, [comments])
 
   const handleVote = useCallback(async (studentId: string) => {
-    // 乐观更新
-    setVotes(prev => ({
-      ...prev,
-      [studentId]: (prev[studentId] || 0) + 1,
-    }))
+    const isVoted = votedStudents.has(studentId)
 
-    try {
-      const result = await addVote(studentId)
-      if (result.duplicate) {
-        // 重复投票，回滚
-        setVotes(prev => ({
-          ...prev,
-          [studentId]: Math.max((prev[studentId] || 1) - 1, 0),
-        }))
-        alert('你已经投过票了！')
+    if (isVoted) {
+      setVotes(prev => ({ ...prev, [studentId]: Math.max((prev[studentId] || 1) - 1, 0) }))
+      setVotedStudents(prev => { const next = new Set(prev); next.delete(studentId); return next })
+      try { await removeVote(studentId) } catch (err) {
+        console.error('Failed to remove vote:', err)
+        setVotes(prev => ({ ...prev, [studentId]: (prev[studentId] || 0) + 1 }))
+        setVotedStudents(prev => new Set([...prev, studentId]))
       }
-    } catch (err) {
-      console.error('Failed to add vote:', err)
-      // 回滚
-      setVotes(prev => ({
-        ...prev,
-        [studentId]: Math.max((prev[studentId] || 1) - 1, 0),
-      }))
+    } else {
+      setVotes(prev => ({ ...prev, [studentId]: (prev[studentId] || 0) + 1 }))
+      setVotedStudents(prev => new Set([...prev, studentId]))
+      try { await addVote(studentId) } catch (err) {
+        console.error('Failed to add vote:', err)
+        setVotes(prev => ({ ...prev, [studentId]: Math.max((prev[studentId] || 1) - 1, 0) }))
+        setVotedStudents(prev => { const next = new Set(prev); next.delete(studentId); return next })
+      }
     }
-  }, [])
+  }, [votedStudents])
 
   const handleAddComment = useCallback(
     async (studentId: string, author: string, content: string) => {
@@ -133,6 +133,7 @@ export function HomePage() {
             voteCount={votes[student.id] || 0}
             comments={comments[student.id] || []}
             onVote={() => handleVote(student.id)}
+            voted={votedStudents.has(student.id)}
             onToggleComments={() => loadComments(student.id)}
             onAddComment={(author, content) =>
               handleAddComment(student.id, author, content)

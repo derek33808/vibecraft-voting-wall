@@ -44,6 +44,17 @@ export async function fetchVoteCounts(): Promise<VoteData> {
   return counts
 }
 
+export async function fetchVotedStudentIds(): Promise<Set<string>> {
+  const fingerprint = getFingerprint()
+  const { data, error } = await supabase
+    .from('votes')
+    .select('student_id')
+    .eq('voter_fingerprint', fingerprint)
+
+  if (error) throw error
+  return new Set((data || []).map(row => row.student_id))
+}
+
 export async function addVote(studentId: string): Promise<{ success: boolean; duplicate: boolean }> {
   const fingerprint = getFingerprint()
 
@@ -63,6 +74,17 @@ export async function addVote(studentId: string): Promise<{ success: boolean; du
   }
 
   return { success: true, duplicate: false }
+}
+
+export async function removeVote(studentId: string): Promise<void> {
+  const fingerprint = getFingerprint()
+  const { error } = await supabase
+    .from('votes')
+    .delete()
+    .eq('student_id', studentId)
+    .eq('voter_fingerprint', fingerprint)
+
+  if (error) throw error
 }
 
 // ============================================

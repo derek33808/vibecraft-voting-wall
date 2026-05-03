@@ -6,6 +6,7 @@ import { VoteButton } from './VoteButton'
 interface StudentCardProps {
   student: Student
   voteCount: number
+  voted: boolean
   comments: Comment[]
   onVote: () => void
   onToggleComments: () => void
@@ -15,6 +16,7 @@ interface StudentCardProps {
 export function StudentCard({
   student,
   voteCount,
+  voted,
   comments,
   onVote,
   onToggleComments,
@@ -34,7 +36,7 @@ export function StudentCard({
       <div className="card-header">
         <div className="student-avatar">{student.name[0]}</div>
         <h3 className="student-name">{student.name}</h3>
-        <VoteButton count={voteCount} onVote={onVote} />
+        <VoteButton count={voteCount} voted={voted} onVote={onVote} />
       </div>
 
       <div className="card-links">
