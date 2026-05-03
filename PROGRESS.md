@@ -15,3 +15,6 @@
 - [x] npm install 依赖安装完成
 - [x] GitHub 仓库创建并推送：https://github.com/derek33808/vibecraft-voting-wall
 - [x] Netlify 部署发布：https://transcendent-mochi-4e15c5.netlify.app
+- [x] v2 接入 Supabase 数据库：students/votes/comments 三张表 + RLS 公开策略
+- [x] 学生真实数据修正：Corum/Isaac/Langer/Max 及 Day1/Day2 链接
+- [x] Netlify 环境变量配置：VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY

@@ -8,6 +8,7 @@ interface StudentCardProps {
   voteCount: number
   comments: Comment[]
   onVote: () => void
+  onToggleComments: () => void
   onAddComment: (author: string, content: string) => void
 }
 
@@ -16,9 +17,17 @@ export function StudentCard({
   voteCount,
   comments,
   onVote,
+  onToggleComments,
   onAddComment,
 }: StudentCardProps) {
   const [showComments, setShowComments] = useState(false)
+
+  const handleToggle = () => {
+    if (!showComments) {
+      onToggleComments()
+    }
+    setShowComments(!showComments)
+  }
 
   return (
     <div className="student-card">
@@ -62,7 +71,7 @@ export function StudentCard({
 
       <button
         className="comment-toggle"
-        onClick={() => setShowComments(!showComments)}
+        onClick={handleToggle}
       >
         💬 留言 ({comments.length})
       </button>

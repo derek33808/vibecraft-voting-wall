@@ -8,18 +8,21 @@ export interface Student {
 }
 
 export interface Comment {
-  id: string
+  id: number | string
+  student_id?: string
   studentId: string
   author: string
   content: string
-  createdAt: number
+  created_at?: string
+  createdAt: number | string
 }
 
 export interface VoteData {
   [studentId: string]: number
 }
 
-export const STUDENTS: Student[] = [
+// 离线兜底数据（Supabase 不可用时使用）
+export const FALLBACK_STUDENTS: Student[] = [
   {
     id: 'corum',
     name: 'Corum',
