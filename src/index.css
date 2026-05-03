@@ -231,6 +231,10 @@ a:hover {
   background: rgba(239, 68, 68, 0.8);
 }
 
+.vote-button--voted .vote-count {
+  color: #fff;
+}
+
 .vote-button:active {
   transform: scale(0.95);
 }
