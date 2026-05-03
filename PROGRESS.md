@@ -13,3 +13,5 @@
 - [x] 核心组件实现：Navbar、Footer、StudentCard、CommentSection、VoteButton
 - [x] HomePage 页面完成（英雄区 + 学生卡片网格 + localStorage 持久化）
 - [x] npm install 依赖安装完成
+- [x] GitHub 仓库创建并推送：https://github.com/derek33808/vibecraft-voting-wall
+- [x] Netlify 部署发布：https://transcendent-mochi-4e15c5.netlify.app
